@@ -1,0 +1,55 @@
+@import 'tailwindcss';
+
+@theme {
+  --font-sans: 'Rubik Variable', system-ui, sans-serif;
+  --color-night: #2b2350;
+  --color-night-deep: #1c1638;
+  --color-ink: #120d26;
+  --color-paper: #fff6e3;
+  --color-amber: #ffb627;
+  --color-ember: #ff6b3d;
+}
+
+/* Phone on its side: too short for the stacked game screens. */
+@custom-variant short (@media (orientation: landscape) and (max-height: 600px));
+
+/* Small phone: trim the spacing so that a round fits without scrolling. */
+@custom-variant compact (@media (max-height: 700px));
+
+@layer base {
+  html {
+    background: var(--color-night);
+    color: var(--color-paper);
+    font-weight: 700;
+    -webkit-tap-highlight-color: transparent;
+  }
+  #root {
+    padding-inline: env(safe-area-inset-left) env(safe-area-inset-right);
+  }
+  button {
+    cursor: pointer;
+  }
+  button:disabled {
+    cursor: default;
+    opacity: 0.4;
+  }
+  :focus-visible {
+    outline: 3px solid var(--color-amber);
+    outline-offset: 3px;
+  }
+}
+
+@utility chunky {
+  border: 3px solid var(--color-ink);
+  border-radius: 14px;
+  box-shadow: 0 4px 0 var(--color-ink);
+}
+
+@utility pressable {
+  min-height: 52px;
+  touch-action: manipulation;
+  &:active:not(:disabled) {
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 var(--color-ink);
+  }
+}
