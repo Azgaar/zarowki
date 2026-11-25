@@ -26,27 +26,32 @@ so agree on it aloud. Each round starts with its first prompt.
 | Mode   | Lives | Does the guesser get a card? |
 | :----- | :---- | :--------------------------- |
 | Easy   | +1.2  | No                           |
-| Normal | +0.4  | Yes                          |
-| Hard   | 0     | Yes                          |
-| Brutal | −0.6  | Yes                          |
+| Normal | +0.7  | Yes                          |
+| Hard   | +0.3  | Yes                          |
+| Brutal | −0.1  | Yes                          |
 
 A guesser with a card also answers and takes a place in the order. With up to 4 players the guesser always gets one.
 
-Lives depend on the number of cards, not players. Start from the mistakes expected in a game when each number is
-misjudged by about 0.6 (normal error with that standard deviation; a guesser with a card knows their own number),
-fitted to a simulation: `0.056 × cards × (cards − 1)` up to 10 cards, then `5.04 + 0.9 × (cards − 10)`.
-The 0.6 comes from an estimate that 9 players make about 4 mistakes on Normal. Add the "Lives" column times the square root
-of that, and round to the nearest whole number, at least 1. For such a table, with 6 or more players, the simulation
-loses about 5–30% of games on Easy, 30–50% on Normal, 45–70% on Hard and 75–95% on Brutal. No playtest has checked this yet:
+Lives depend on the number of players. Start from the mistakes expected in a game when everyone has a card and each
+number is misjudged by about 1 (normal error with that standard deviation; the guesser knows their own number),
+fitted to a simulation: `0.115 × players × (players − 1)` up to 10 players, then `10.35 + 1.4 × (players − 10)`.
+Add the "Lives" column times the square root of that and round to the nearest whole number. Each mode then gets at least
+one life more than the next harder mode, and Brutal at least 1. The missing guesser card on Easy is not subtracted,
+so Easy always has more lives and fewer cards. For such a table, with 5 or more players, the simulation loses
+about 1–5% of games on Easy, 10–30% on Normal, 25–50% on Hard and 45–75% on Brutal. The 1 is an estimate:
+lives based on 0.6 were too hard to win with.
 
 | Players | Easy | Normal | Hard | Brutal |
 | ------: | ---: | -----: | ---: | -----: |
-|       4 |    2 |      1 |    1 |      1 |
-|       6 |    2 |      2 |    2 |      1 |
-|       8 |    4 |      4 |    3 |      2 |
-|       9 |    5 |      5 |    4 |      3 |
-|      12 |    9 |      8 |    7 |      5 |
-|      18 |   15 |     14 |   12 |     10 |
+|       3 |    4 |      3 |    2 |      1 |
+|       4 |    4 |      3 |    2 |      1 |
+|       5 |    5 |      4 |    3 |      2 |
+|       6 |    6 |      5 |    4 |      3 |
+|       7 |    8 |      7 |    6 |      5 |
+|       8 |    9 |      8 |    7 |      6 |
+|       9 |   12 |     10 |    9 |      8 |
+|      12 |   18 |     16 |   14 |     13 |
+|      18 |   27 |     25 |   23 |     21 |
 
 Up to 10 cards have different numbers. Cards after the tenth come from a second 1–10 deck, so numbers can repeat.
 

@@ -35,22 +35,22 @@ const rounds = Array.from({ length: ROUNDS }, (_, i) => i + 1);
 
 describe('lives', () => {
   it.each([
-    [3, 'easy', 1],
+    [3, 'easy', 4],
     [3, 'brutal', 1],
-    [6, 'normal', 2],
-    [8, 'normal', 4],
-    [9, 'normal', 5],
-    [8, 'hard', 3],
-    [8, 'brutal', 2],
-    [18, 'normal', 14],
+    [7, 'easy', 8],
+    [7, 'normal', 7],
+    [7, 'hard', 6],
+    [7, 'brutal', 5],
+    [10, 'normal', 13],
+    [18, 'easy', 27],
+    [18, 'brutal', 21],
   ] as const)('%i players, %s -> %i', (n, c, expected) => {
     expect(getStartingLamps(n, c)).toBe(expected);
   });
-  it('never gives a harder mode, or a smaller table, more lives', () => {
-    for (let n = MIN_PLAYERS; n <= MAX_PLAYERS; n++) {
-      const lives = COMPLEXITIES.map((c) => getStartingLamps(n, c));
-      expect(lives).toEqual([...lives].sort((a, b) => b - a));
-    }
+  it('gives each easier mode more lives, and a smaller table never more', () => {
+    for (let n = MIN_PLAYERS; n <= MAX_PLAYERS; n++)
+      for (let i = 1; i < COMPLEXITIES.length; i++)
+        expect(getStartingLamps(n, COMPLEXITIES[i - 1]!)).toBeGreaterThan(getStartingLamps(n, COMPLEXITIES[i]!));
     for (const c of COMPLEXITIES)
       for (let n = MIN_PLAYERS; n < MAX_PLAYERS; n++)
         expect(getStartingLamps(n + 1, c)).toBeGreaterThanOrEqual(getStartingLamps(n, c));
@@ -195,10 +195,10 @@ describe('board', () => {
     expect(getRankTier(s.lit, s.burnt)).toBe('perfect');
   });
   it('loses at zero and ignores later actions', () => {
-    const s = createBoard(room({ complexity: 'brutal' }));
+    const s = createBoard(room({ names: people(4), complexity: 'brutal' }));
     const lost = play(s, seatsByValue(s, -1));
-    expect(lost).toMatchObject({ status: 'lost', lit: 0, burnt: 2 });
-    expect(lost.reveals).toHaveLength(3);
+    expect(lost).toMatchObject({ status: 'lost', lit: 0, burnt: 1 });
+    expect(lost.reveals).toHaveLength(2);
     expect(boardReducer(lost, { type: 'next' })).toBe(lost);
   });
   it('ignores repeat reveals and early advance', () => {

@@ -1,5 +1,6 @@
 import { createRng, shuffle } from './prng';
 import {
+  COMPLEXITIES,
   PROMPTS_PER_ROUND,
   ROUNDS,
   type Complexity,
@@ -11,9 +12,9 @@ import {
 /** Lives above or below the expected mistakes, in units of their spread. */
 const MARGIN: Record<Complexity, number> = {
   easy: 1.2,
-  normal: 0.4,
-  hard: 0,
-  brutal: -0.6,
+  normal: 0.7,
+  hard: 0.3,
+  brutal: -0.1,
 };
 
 /** Up to this many players the guesser always has a card: fewer cards leave almost nothing to order. */
@@ -22,19 +23,23 @@ const SMALL_TABLE = 4;
 const SCALE = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] as const;
 
 /**
- * Mistakes per game by a table that misjudges each number by about 0.6, fitted to a simulation:
- * 9 players with cards make about 4.
+ * Mistakes per game when everyone has a card and each number is misjudged by about 1, fitted to a simulation:
+ * 7 players make about 5.
  * Grows with the pairs of cards that can be swapped. After the tenth card, numbers repeat and it grows slower.
  */
-function expectedMistakes(cards: number): number {
-  return cards <= 10 ? 0.056 * cards * (cards - 1) : 5.04 + 0.9 * (cards - 10);
+function expectedMistakes(players: number): number {
+  return players <= 10 ? 0.115 * players * (players - 1) : 10.35 + 1.4 * (players - 10);
 }
 
-/** Lives at the start of the game. They follow the number of cards, not of players. */
+/**
+ * Lives at the start of the game. Each mode has at least one more than the next harder one.
+ * They follow the number of players, so the missing guesser card on Easy only helps.
+ */
 export function getStartingLamps(playerCount: number, complexity: Complexity): number {
-  const cards = guesserGetsCard(playerCount, complexity) ? playerCount : playerCount - 1;
-  const mistakes = expectedMistakes(cards);
-  return Math.max(1, Math.round(mistakes + MARGIN[complexity] * Math.sqrt(mistakes)));
+  const mistakes = expectedMistakes(playerCount);
+  const harder = COMPLEXITIES[COMPLEXITIES.indexOf(complexity) + 1];
+  const floor = harder ? getStartingLamps(playerCount, harder) + 1 : 1;
+  return Math.max(floor, Math.round(mistakes + MARGIN[complexity] * Math.sqrt(mistakes)));
 }
 
 /** Rounds played at this table before the given one, from 0. */
